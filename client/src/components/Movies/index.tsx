@@ -8,14 +8,24 @@ import {
 import { FunctionComponent, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Movie } from '../../lib/models/movies';
-import { moviesList } from '../../lib/test/data/mockMovies';
 
 const Movies: FunctionComponent = () => {
   const [movies, setMovies] = useState<Movie[]>([]);
 
   useEffect(() => {
-    setMovies(moviesList);
+    const headers = new Headers({ 'Content-Type': 'application/json' });
+
+    const requestOptions = {
+      method: 'GET',
+      headers,
+    };
+
+    fetch('http://localhost:8080/movies', requestOptions)
+      .then((response) => response.json())
+      .then((data) => setMovies(data))
+      .catch((err) => console.error(err));
   }, []);
+
   return (
     <div>
       <h2>Movies</h2>
