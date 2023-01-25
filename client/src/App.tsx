@@ -17,7 +17,7 @@ function App() {
   const [jwtToken, setJwtToken] = useState('');
   const navigate = useNavigate();
 
-  const logout = () => {
+  const handleLogout = () => {
     setJwtToken('');
     navigate('/login');
   };
@@ -36,7 +36,7 @@ function App() {
               Login
             </Button>
           ) : (
-            <Button color="warning" variant="contained" onClick={logout}>
+            <Button color="warning" variant="contained" onClick={handleLogout}>
               Logout
             </Button>
           )}
