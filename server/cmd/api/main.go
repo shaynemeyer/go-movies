@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"time"
 
 	"github.com/joho/godotenv"
 )
@@ -18,6 +19,11 @@ type application struct {
 	DSN string
 	Domain string 
 	DB repository.DatabaseRepo
+	auth Auth
+	JWTSecret string 
+	JWTIssuer string
+	JWTAudience string
+	CookieDomain string
 }
 
 // init is invoked before main()
@@ -36,6 +42,11 @@ func main() {
 	
 	// read from command line
 	flag.StringVar(&app.DSN, "dsn", conf.DB.ConnectionString, "Postgres connection string")
+	flag.StringVar(&app.JWTSecret, "jwt-secret", conf.Auth.JWTSecret, "signing secret")
+	flag.StringVar(&app.JWTIssuer, "jwt-issuer", conf.Auth.JWTIssuer, "signing issuer")
+	flag.StringVar(&app.JWTAudience, "jwt-audience", conf.Auth.JWTAudience, "signing audience")
+	flag.StringVar(&app.CookieDomain, "cookie-domain", conf.Auth.CookieDomain, "cookie domain")
+	flag.StringVar(&app.Domain, "domain", conf.Auth.AppDomain, "domain")
 	flag.Parse()
 
 	// connect to the database
@@ -46,7 +57,16 @@ func main() {
 	app.DB = &dbrepo.PostgresDBRepo{DB: conn}
 	defer app.DB.Connection().Close()
 
-  app.Domain = "example.com"
+	app.auth = Auth{
+		Issuer: app.JWTIssuer,
+		Audience: app.JWTAudience,
+		Secret: app.JWTSecret,
+		TokenExpiry: time.Minute * 15,
+		RefreshExpiry: time.Hour * 24,
+		CookiePath: "/",
+		CookieName: "__Host-refresh_token",
+		CookieDomain: app.CookieDomain,
+	}
 
 	log.Println("Starting application on port", port)
 
