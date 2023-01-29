@@ -10,6 +10,7 @@ import { useNavigate, useOutletContext } from 'react-router-dom';
 
 interface OutletContextType {
   setJwtToken: Dispatch<SetStateAction<string>>;
+  toggleRefresh: (status: boolean) => void;
 }
 
 const Login: FunctionComponent = () => {
@@ -17,7 +18,7 @@ const Login: FunctionComponent = () => {
   const [password, setPassword] = useState('');
   const [loginError, setLoginError] = useState('');
 
-  const { setJwtToken } = useOutletContext<OutletContextType>();
+  const { setJwtToken, toggleRefresh } = useOutletContext<OutletContextType>();
 
   const navigate = useNavigate();
 
@@ -26,13 +27,36 @@ const Login: FunctionComponent = () => {
 
     setLoginError('');
 
-    if (email === 'admin@password.com') {
-      setJwtToken('asldfkjasdlfj');
-      setLoginError('');
-      navigate('/');
-    }
+    // build the request payload
+    let payload = {
+      email,
+      password,
+    };
 
-    setLoginError('Bad username or password, please try again');
+    const requestOptions: RequestInit = {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      credentials: 'include',
+      body: JSON.stringify(payload),
+    };
+
+    fetch(`/authenticate`, requestOptions)
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.error) {
+          setLoginError(data.message);
+        } else {
+          setLoginError('');
+          setJwtToken(data.access_token);
+          toggleRefresh(true);
+          navigate('/');
+        }
+      })
+      .catch((error) => {
+        setLoginError(error);
+      });
   };
   return (
     <div>

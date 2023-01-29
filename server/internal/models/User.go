@@ -17,7 +17,7 @@ type User struct {
 	UpdatedAt time.Time `json:"_"`
 }
 
-func (u *User) PasswordMatches(plainText string) (bool,err) {
+func (u *User) PasswordMatches(plainText string) (bool, error) {
 	err := bcrypt.CompareHashAndPassword([]byte(u.Password), []byte(plainText))
 
 	if err != nil {

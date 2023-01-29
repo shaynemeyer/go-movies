@@ -7,19 +7,96 @@ import {
   ListItemText,
   Typography,
 } from '@mui/material';
-import { useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 import { useNavigate } from 'react-router-dom';
 import { Outlet } from 'react-router-dom';
+import { request } from './lib/fetch/request';
+
+interface TokenResponse {
+  access_token: string;
+}
 
 function App() {
   const [jwtToken, setJwtToken] = useState('');
+
+  const [tickInterval, setTickInterval] = useState<
+    number | NodeJS.Timer | null
+  >(null);
+
   const navigate = useNavigate();
 
   const handleLogout = () => {
-    setJwtToken('');
+    const requestOptions: RequestInit = {
+      method: 'GET',
+      credentials: 'include',
+    };
+
+    fetch('/logout', requestOptions)
+      .catch((error) => console.log('error logging out', error))
+      .finally(() => {
+        setJwtToken('');
+        toggleRefresh(false);
+      });
+
     navigate('/login');
   };
+
+  const toggleRefresh = useCallback(
+    (status: boolean) => {
+      console.log('clicked');
+
+      if (status) {
+        console.log('turning on ticking');
+        let i = setInterval(() => {
+          const requestOptions: RequestInit = {
+            method: 'GET',
+            credentials: 'include',
+          };
+
+          fetch(`/refresh`, requestOptions)
+            .then((response) => response.json())
+            .then((data) => {
+              if (data.access_token) {
+                setJwtToken(data.access_token);
+              }
+            })
+            .catch((error) => console.log('user is not logged in'));
+        }, 600000);
+        setTickInterval(i);
+        console.log('setting tick interval to', i);
+      } else {
+        console.log('turning off ticking');
+        console.log('turning off tickInterval', tickInterval);
+        if (tickInterval) {
+          clearInterval(tickInterval);
+        }
+
+        setTickInterval(null);
+      }
+    },
+    [tickInterval]
+  );
+
+  useEffect(() => {
+    if (jwtToken === '') {
+      const requestOptions: RequestInit = {
+        method: 'GET',
+        credentials: 'include',
+      };
+
+      request<TokenResponse>(`/refresh`, requestOptions)
+        .then((token) => {
+          if (token.access_token) {
+            setJwtToken(token.access_token);
+            toggleRefresh(true);
+          }
+        })
+        .catch((error) => {
+          console.log('user is not logged in', error);
+        });
+    }
+  }, [jwtToken, toggleRefresh]);
 
   return (
     <Container maxWidth="lg">
@@ -80,6 +157,7 @@ function App() {
             context={{
               jwtToken,
               setJwtToken,
+              toggleRefresh,
             }}
           />
         </Grid>

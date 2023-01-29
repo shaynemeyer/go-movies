@@ -97,7 +97,7 @@ func (j *Auth) GetRefreshCookie(refreshToken string) *http.Cookie {
 	}
 }
 
-func (j *Auth) GetExpiredRefreshCookie(refreshToken string) *http.Cookie {
+func (j *Auth) GetExpiredRefreshCookie() *http.Cookie {
 	return &http.Cookie{
 		Name: j.CookieName,
 		Path: j.CookiePath,
