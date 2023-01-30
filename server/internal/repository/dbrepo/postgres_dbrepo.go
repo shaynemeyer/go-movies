@@ -72,7 +72,7 @@ func (m *PostgresDBRepo) GetUserByEmail(email string) (*models.User, error) {
 
 	defer cancel()
 
-	query := `select id, email , first_name, last_name, 
+	query := `select id, email, first_name, last_name, password,
 	created_at, updated_at from users where email = $1`
 
 	var user models.User
@@ -100,7 +100,7 @@ func (m *PostgresDBRepo) GetUserByID(id int) (*models.User, error) {
 
 	defer cancel()
 
-	query := `select id, email , first_name, last_name, 
+	query := `select id, email, first_name, last_name, password, 
 	created_at, updated_at from users where id = $1`
 
 	var user models.User
