@@ -34,7 +34,6 @@ const Input = forwardRef(
     }: InputProps,
     ref
   ) => {
-    console.log({ hasError, errorMsg, name });
     return (
       <FormControl sx={{ width: '100%', marginBottom: '1rem' }}>
         <FormGroup>

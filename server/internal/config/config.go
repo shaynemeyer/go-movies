@@ -16,9 +16,14 @@ type DBConfig struct {
 	ConnectionString string
 }
 
+type APIConfig struct {
+	TMDBAPIKey string
+}
+
 type Config struct {
 	Auth AuthConfig
 	DB DBConfig
+	API APIConfig
 }
 
 // New returns a new Config struct
@@ -33,6 +38,9 @@ func New() *Config {
 		},
 		DB: DBConfig{
 			ConnectionString: getEnv("DB_CONNECTION_STRING", ""),
+		},
+		API: APIConfig{
+			TMDBAPIKey: getEnv("TMDB_API_KEY", ""),
 		},
 	}
 }

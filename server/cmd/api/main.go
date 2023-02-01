@@ -24,6 +24,7 @@ type application struct {
 	JWTIssuer string
 	JWTAudience string
 	CookieDomain string
+	TMDBAPIKey string
 }
 
 // init is invoked before main()
@@ -47,6 +48,7 @@ func main() {
 	flag.StringVar(&app.JWTAudience, "jwt-audience", conf.Auth.JWTAudience, "signing audience")
 	flag.StringVar(&app.CookieDomain, "cookie-domain", conf.Auth.CookieDomain, "cookie domain")
 	flag.StringVar(&app.Domain, "domain", conf.Auth.AppDomain, "domain")
+	flag.StringVar(&app.TMDBAPIKey, "tmdb-api-key", conf.API.TMDBAPIKey, "tmdb-api-key")
 	flag.Parse()
 
 	// connect to the database

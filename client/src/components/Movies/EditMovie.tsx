@@ -7,7 +7,7 @@ import {
   useState,
 } from 'react';
 import { useNavigate, useOutletContext, useParams } from 'react-router-dom';
-import { Genre, Movie } from '../../lib/models/movies';
+import { Genre, Movie, MovieRequest } from '../../lib/models/movies';
 import Dropdown from '../form/Dropdown';
 import Input from '../form/Input';
 import TextArea from '../form/TextArea';
@@ -28,6 +28,7 @@ const EditMovie: FunctionComponent = () => {
     mpaa_rating: '',
     description: '',
     genres: [],
+    genres_array: [],
     image: '',
   };
 
@@ -54,7 +55,6 @@ const EditMovie: FunctionComponent = () => {
 
   // get id from the URL
   let { id } = useParams();
-
   if (id === undefined) {
     id = '0';
   }
@@ -75,6 +75,7 @@ const EditMovie: FunctionComponent = () => {
         mpaa_rating: '',
         description: '',
         genres: [],
+        genres_array: [],
         image: '',
       });
 
@@ -96,6 +97,7 @@ const EditMovie: FunctionComponent = () => {
           setMovie((m) => ({
             ...m,
             genres: checks,
+            genres_array: [],
           }));
         })
         .catch((err) => console.error(err));
@@ -108,6 +110,7 @@ const EditMovie: FunctionComponent = () => {
     event.preventDefault();
 
     let errors: string[] = [];
+
     let required = [
       { field: movie.title, name: 'title' },
       { field: movie.release_date, name: 'release_date' },
@@ -134,6 +137,49 @@ const EditMovie: FunctionComponent = () => {
     if (errors.length > 0) {
       return false;
     }
+
+    // passed validation, now save changes
+    const headers = new Headers();
+    headers.append('Content-Type', 'application/json');
+    headers.append('Authorization', `Bearer ${jwtToken}`);
+
+    // assume we are adding a new movie
+    let method = 'PUT';
+
+    if (movie.id > 0) {
+      method = 'PATCH';
+    }
+
+    const requestBody: MovieRequest = {
+      id: movie.id,
+      title: movie.title,
+      release_date: new Date(movie.release_date),
+      runtime: parseInt(movie.runtime, 10),
+      mpaa_rating: movie.mpaa_rating,
+      description: movie.description,
+      genres: movie.genres,
+      genres_array: movie.genres_array,
+      image: movie.image,
+    };
+
+    let requestOptions: RequestInit = {
+      body: JSON.stringify(requestBody),
+      method,
+      headers,
+      credentials: 'include',
+    };
+
+    fetch(`/admin/movies/${movie.id}`, requestOptions)
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.error) {
+          console.log(data.error);
+          console.log(data);
+        } else {
+          navigate('/manage-catalog');
+        }
+      })
+      .catch((err) => console.log(err));
   };
 
   const handleChange =
@@ -154,9 +200,17 @@ const EditMovie: FunctionComponent = () => {
     let tmpArr = movie.genres;
     tmpArr[position].checked = !tmpArr[position].checked;
 
+    let tmpIDs = movie.genres_array;
+    if (!event.target.checked) {
+      tmpIDs.splice(tmpIDs.indexOf(parseInt(event.target.value, 10)));
+    } else {
+      tmpIDs.push(parseInt(event.target.value, 10));
+    }
+
     setMovie({
       ...movie,
       genres: tmpArr,
+      genres_array: tmpIDs,
     });
   };
 

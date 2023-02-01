@@ -12,5 +12,18 @@ export interface Movie {
   mpaa_rating: string;
   description: string;
   genres: Genre[];
+  genres_array: number[];
+  image: string;
+}
+
+export interface MovieRequest {
+  id: number;
+  title: string;
+  release_date: Date;
+  runtime: number;
+  mpaa_rating: string;
+  description: string;
+  genres: Genre[];
+  genres_array: number[];
   image: string;
 }
