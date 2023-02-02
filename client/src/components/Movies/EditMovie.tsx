@@ -32,7 +32,7 @@ const EditMovie: FunctionComponent = () => {
     image: '',
   };
 
-  const [error, setError] = useState(null);
+  const [error, setError] = useState<string | null>(null);
   const [errors, setErrors] = useState<string[]>([]);
   const [movie, setMovie] = useState<Movie>({ ...initialMovie });
 
@@ -43,7 +43,7 @@ const EditMovie: FunctionComponent = () => {
   const mpaaOptions: MPAAOption[] = [
     { id: 'G', value: 'G' },
     { id: 'PG', value: 'PG' },
-    { id: 'PG13', value: 'PG13' },
+    { id: 'PG-13', value: 'PG-13' },
     { id: 'R', value: 'R' },
     { id: 'NC17', value: 'NC17' },
     { id: '18A', value: '18A' },
@@ -103,6 +103,53 @@ const EditMovie: FunctionComponent = () => {
         .catch((err) => console.error(err));
     } else {
       // editing a movie
+      const headers = new Headers();
+      headers.append('Content-Type', 'application/json');
+      headers.append('Authorization', `Bearer ${jwtToken}`);
+
+      const requestOptions: RequestInit = {
+        method: 'GET',
+        headers,
+      };
+
+      fetch(`/admin/movies/${id}`, requestOptions)
+        .then((response) => {
+          if (response.status !== 200) {
+            setError(`Invalid response code: ${response.status}`);
+          }
+          return response.json();
+        })
+        .then(({ movie, genres }: { movie: MovieRequest; genres: Genre[] }) => {
+          const newMovie: Movie = {
+            id: movie.id,
+            title: movie.title,
+            release_date: new Date(movie.release_date)
+              .toISOString()
+              .split('T')[0],
+            runtime: `${movie.runtime}`,
+            mpaa_rating: movie.mpaa_rating,
+            description: movie.description,
+            genres: movie.genres,
+            genres_array: movie.genres_array,
+            image: movie.image,
+          };
+
+          const checks: Genre[] = [];
+
+          genres.forEach((g) => {
+            if (movie.genres_array.indexOf(g.id) !== -1) {
+              checks.push({ id: g.id, checked: true, genre: g.genre });
+            } else {
+              checks.push({ id: g.id, checked: false, genre: g.genre });
+            }
+          });
+
+          setMovie({
+            ...newMovie,
+            genres: checks,
+          });
+        })
+        .catch((err) => console.log(err));
     }
   }, [id, jwtToken, navigate]);
 
@@ -214,108 +261,112 @@ const EditMovie: FunctionComponent = () => {
     });
   };
 
-  return (
-    <div>
-      <h2>Add/Edit Movie</h2>
+  if (error !== null) {
+    return <div>Error: {error}</div>;
+  } else {
+    return (
+      <div>
+        <h2>{id === '0' ? 'Add' : 'Edit'} Movie</h2>
 
-      <hr />
-      <form onSubmit={handleSubmit}>
-        <input type="hidden" name="id" value={movie.id} id="id" />
-
-        <Input
-          title={'Title'}
-          type={'text'}
-          name={'title'}
-          value={movie.title}
-          testId="movie-title"
-          onChange={handleChange('title')}
-          errorMsg={'Please enter a title'}
-          hasError={hasError('title')}
-        />
-        <br />
-        <Input
-          title={'Release Date'}
-          type={'date'}
-          name={'release_date'}
-          value={movie.release_date}
-          testId="movie-release-date"
-          onChange={handleChange('release_date')}
-          errorMsg={'Please enter a release date'}
-          hasError={hasError('release_date')}
-        />
-
-        <Input
-          title={'Runtime'}
-          type={'text'}
-          name={'runtime'}
-          value={movie.runtime}
-          testId="movie-runtime"
-          onChange={handleChange('runtime')}
-          errorMsg={'Please enter a runtime'}
-          hasError={hasError('runtime')}
-        />
-
-        <Dropdown
-          title="MPAA Rating"
-          name={'mpaa_rating'}
-          value={movie.mpaa_rating}
-          onChange={handleChange('mpaa_rating')}
-          options={mpaaOptions}
-          hasError={hasError('mpaa_rating')}
-          errorMsg={'Please choose'}
-          testId="mpaa-rating"
-        />
-
-        <TextArea
-          title={'Description'}
-          name={'description'}
-          value={`${movie.description}`}
-          testId="movie-description"
-          onChange={handleChange('description')}
-          hasError={hasError('description')}
-          errorMsg={'Please enter a description'}
-          rows={4}
-        />
-        <br />
-        <br />
         <hr />
+        <form onSubmit={handleSubmit}>
+          <input type="hidden" name="id" value={movie.id} id="id" />
 
-        <h3>Genres</h3>
+          <Input
+            title={'Title'}
+            type={'text'}
+            name={'title'}
+            value={movie.title}
+            testId="movie-title"
+            onChange={handleChange('title')}
+            errorMsg={'Please enter a title'}
+            hasError={hasError('title')}
+          />
+          <br />
+          <Input
+            title={'Release Date'}
+            type={'date'}
+            name={'release_date'}
+            value={movie.release_date}
+            testId="movie-release-date"
+            onChange={handleChange('release_date')}
+            errorMsg={'Please enter a release date'}
+            hasError={hasError('release_date')}
+          />
 
-        {movie.genres && movie.genres.length > 1 && (
-          <>
-            {Array.from(movie.genres).map((g, index) => (
-              <FormControlLabel
-                sx={{ width: '100%' }}
-                key={index}
-                label={g.genre}
-                control={
-                  <Checkbox
-                    checked={movie.genres[index].checked}
-                    name={'genre'}
-                    onChange={(event) => handleChecked(event, index)}
-                    value={g.id}
-                  />
-                }
-              />
-            ))}
-          </>
-        )}
+          <Input
+            title={'Runtime'}
+            type={'text'}
+            name={'runtime'}
+            value={movie.runtime}
+            testId="movie-runtime"
+            onChange={handleChange('runtime')}
+            errorMsg={'Please enter a runtime'}
+            hasError={hasError('runtime')}
+          />
 
-        {hasError('genres') && (
-          <Typography sx={{ color: 'red' }}>
-            You must select at least 1 genre.
-          </Typography>
-        )}
-        <br />
-        <hr />
-        <br />
-        <Button type="submit" variant="contained">
-          Save
-        </Button>
-      </form>
-    </div>
-  );
+          <Dropdown
+            title="MPAA Rating"
+            name={'mpaa_rating'}
+            value={movie.mpaa_rating}
+            onChange={handleChange('mpaa_rating')}
+            options={mpaaOptions}
+            hasError={hasError('mpaa_rating')}
+            errorMsg={'Please choose'}
+            testId="mpaa-rating"
+          />
+
+          <TextArea
+            title={'Description'}
+            name={'description'}
+            value={`${movie.description}`}
+            testId="movie-description"
+            onChange={handleChange('description')}
+            hasError={hasError('description')}
+            errorMsg={'Please enter a description'}
+            rows={4}
+          />
+          <br />
+          <br />
+          <hr />
+
+          <h3>Genres</h3>
+
+          {movie.genres && movie.genres.length > 1 && (
+            <>
+              {Array.from(movie.genres).map((g, index) => (
+                <FormControlLabel
+                  sx={{ width: '100%' }}
+                  key={index}
+                  label={g.genre}
+                  control={
+                    <Checkbox
+                      checked={movie.genres[index].checked}
+                      name={'genre'}
+                      onChange={(event) => handleChecked(event, index)}
+                      value={g.id}
+                    />
+                  }
+                />
+              ))}
+            </>
+          )}
+
+          {hasError('genres') && (
+            <Typography sx={{ color: 'red' }}>
+              You must select at least 1 genre.
+            </Typography>
+          )}
+          <br />
+          <hr />
+          <br />
+          <Button type="submit" variant="contained">
+            Save
+          </Button>
+        </form>
+      </div>
+    );
+  }
 };
 
 export default EditMovie;
