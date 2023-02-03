@@ -6,6 +6,7 @@ import App from './App';
 import ManageCatalog from './components/Catalog/ManageCatalog';
 import ErrorPage from './components/Error';
 import Genres from './components/Genres';
+import { OneGenre } from './components/Genres/OneGenre';
 import GraphQL from './components/GraphQL';
 import Home from './components/Home';
 import Login from './components/Login';
@@ -23,6 +24,7 @@ const router = createBrowserRouter([
       { path: '/movies', element: <Movies /> },
       { path: '/movies/:id', element: <Movie /> },
       { path: '/genres', element: <Genres /> },
+      { path: '/genres/:id', element: <OneGenre /> },
       { path: '/admin/movie/0', element: <EditMovie /> },
       { path: '/admin/movie/:id', element: <EditMovie /> },
       { path: '/manage-catalog', element: <ManageCatalog /> },
