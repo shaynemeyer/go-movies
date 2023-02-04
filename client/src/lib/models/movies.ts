@@ -27,3 +27,15 @@ export interface MovieRequest {
   genres_array: number[];
   image: string;
 }
+
+export interface GraphQLMovieResponse {
+  id: number;
+  title: string;
+  description: string;
+  release_date: Date;
+  runtime: number;
+  mpaa_rating: string;
+  created_at: string;
+  updated_at: string;
+  image: string;
+}
