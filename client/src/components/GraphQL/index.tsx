@@ -24,7 +24,7 @@ const GraphQL: FunctionComponent = () => {
   const performSearch = () => {
     const payload = `
       {
-        search(titleContains: "${searchTerm}"}) {
+        search(titleContains: "${searchTerm}") {
           id
           title
           runtime
