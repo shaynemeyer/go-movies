@@ -17,6 +17,21 @@ docker-compose up -d
 docker-compose down
 ```
 
+## Run API
+
+```bash
+cd server/
+go run ./cmd/api
+```
+
+## Run the Frontend application
+
+```bash
+cd client/
+npm run start
+```
+
+
 ## Project Structure
 
 ```ascii
