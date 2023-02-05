@@ -18,7 +18,7 @@ const Genres: FunctionComponent = () => {
       headers,
     };
 
-    fetch('/genres', requestOptions)
+    fetch(`${process.env.REACT_APP_BACKEND}/genres`, requestOptions)
       .then((response) => response.json())
       .then((data) => {
         if ((data as ErrorResponse).error) {

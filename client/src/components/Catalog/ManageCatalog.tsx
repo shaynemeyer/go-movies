@@ -30,7 +30,7 @@ const ManageCatalog: FunctionComponent = () => {
       headers: headers,
     };
 
-    fetch(`/admin/movies`, requestOptions)
+    fetch(`${process.env.REACT_APP_BACKEND}/admin/movies`, requestOptions)
       .then((response) => response.json())
       .then((data) => {
         setMovies(data);
@@ -63,7 +63,10 @@ const ManageCatalog: FunctionComponent = () => {
           headers: headers,
         };
 
-        fetch(`/admin/movies/${id}`, requestOptions)
+        fetch(
+          `${process.env.REACT_APP_BACKEND}/admin/movies/${id}`,
+          requestOptions
+        )
           .then((response) => response.json())
           .then((data) => {
             if (data.error) {

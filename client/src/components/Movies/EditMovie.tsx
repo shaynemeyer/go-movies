@@ -86,7 +86,7 @@ const EditMovie: FunctionComponent = () => {
         headers,
       };
 
-      fetch(`/genres`, requestOptions)
+      fetch(`${process.env.REACT_APP_BACKEND}/genres`, requestOptions)
         .then((response) => response.json())
         .then((data) => {
           const checks: Genre[] = [];
@@ -112,7 +112,10 @@ const EditMovie: FunctionComponent = () => {
         headers,
       };
 
-      fetch(`/admin/movies/${id}`, requestOptions)
+      fetch(
+        `${process.env.REACT_APP_BACKEND}/admin/movies/${id}`,
+        requestOptions
+      )
         .then((response) => {
           if (response.status !== 200) {
             setError(`Invalid response code: ${response.status}`);
@@ -216,7 +219,10 @@ const EditMovie: FunctionComponent = () => {
       credentials: 'include',
     };
 
-    fetch(`/admin/movies/${movie.id}`, requestOptions)
+    fetch(
+      `${process.env.REACT_APP_BACKEND}/admin/movies/${movie.id}`,
+      requestOptions
+    )
       .then((response) => response.json())
       .then((data) => {
         if (data.error) {

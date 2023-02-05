@@ -20,7 +20,7 @@ const Movies: FunctionComponent = () => {
       headers,
     };
 
-    fetch('http://localhost:8080/movies', requestOptions)
+    fetch(`${process.env.REACT_APP_BACKEND}/movies`, requestOptions)
       .then((response) => response.json())
       .then((data) => setMovies(data))
       .catch((err) => console.error(err));
