@@ -115,7 +115,9 @@ const ManageCatalog: FunctionComponent = () => {
                 </IconButton>
               </td>
               <td>{m.title}</td>
-              <td>{m.release_date}</td>
+              <td style={{ textAlign: 'center', margin: '0 2rem' }}>
+                {new Date(m.release_date).toLocaleDateString()}
+              </td>
               <td>{m.mpaa_rating}</td>
             </tr>
           ))}

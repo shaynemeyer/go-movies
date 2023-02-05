@@ -1,8 +1,7 @@
-import { Chip, dividerClasses } from '@mui/material';
+import { Chip } from '@mui/material';
 import { FunctionComponent, useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { Movie as MovieType } from '../../lib/models/movies';
-import { moviesList } from '../../lib/test/data/mockMovies';
 
 const Movie: FunctionComponent = () => {
   const [movie, setMovie] = useState<MovieType>();

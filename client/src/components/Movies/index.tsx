@@ -44,7 +44,9 @@ const Movies: FunctionComponent = () => {
               <TableCell>
                 <Link to={`/movies/${m.id}`}>{m.title}</Link>
               </TableCell>
-              <TableCell>{m.release_date}</TableCell>
+              <TableCell>
+                {new Date(m.release_date).toLocaleDateString()}
+              </TableCell>
               <TableCell>{m.mpaa_rating}</TableCell>
             </TableRow>
           ))}
