@@ -30,7 +30,7 @@ const ManageCatalog: FunctionComponent = () => {
       headers: headers,
     };
 
-    fetch(`/admin/movies`, requestOptions)
+    fetch(`${process.env.REACT_APP_BACKEND}/admin/movies`, requestOptions)
       .then((response) => response.json())
       .then((data) => {
         setMovies(data);
@@ -63,7 +63,10 @@ const ManageCatalog: FunctionComponent = () => {
           headers: headers,
         };
 
-        fetch(`/admin/movies/${id}`, requestOptions)
+        fetch(
+          `${process.env.REACT_APP_BACKEND}/admin/movies/${id}`,
+          requestOptions
+        )
           .then((response) => response.json())
           .then((data) => {
             if (data.error) {
@@ -112,7 +115,9 @@ const ManageCatalog: FunctionComponent = () => {
                 </IconButton>
               </td>
               <td>{m.title}</td>
-              <td>{m.release_date}</td>
+              <td style={{ textAlign: 'center', margin: '0 2rem' }}>
+                {new Date(m.release_date).toLocaleDateString()}
+              </td>
               <td>{m.mpaa_rating}</td>
             </tr>
           ))}

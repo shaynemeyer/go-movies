@@ -20,10 +20,15 @@ type APIConfig struct {
 	TMDBAPIKey string
 }
 
+type CORSConfig struct {
+	AllowOrigin string
+}
+
 type Config struct {
 	Auth AuthConfig
 	DB DBConfig
 	API APIConfig
+	CORS CORSConfig
 }
 
 // New returns a new Config struct
@@ -41,6 +46,9 @@ func New() *Config {
 		},
 		API: APIConfig{
 			TMDBAPIKey: getEnv("TMDB_API_KEY", ""),
+		},
+		CORS: CORSConfig{
+			AllowOrigin: getEnv("CORS_ALLOW_ORIGIN", ""),
 		},
 	}
 }

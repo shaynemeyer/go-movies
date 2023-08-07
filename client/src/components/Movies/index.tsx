@@ -20,7 +20,7 @@ const Movies: FunctionComponent = () => {
       headers,
     };
 
-    fetch('http://localhost:8080/movies', requestOptions)
+    fetch(`${process.env.REACT_APP_BACKEND}/movies`, requestOptions)
       .then((response) => response.json())
       .then((data) => setMovies(data))
       .catch((err) => console.error(err));
@@ -44,7 +44,9 @@ const Movies: FunctionComponent = () => {
               <TableCell>
                 <Link to={`/movies/${m.id}`}>{m.title}</Link>
               </TableCell>
-              <TableCell>{m.release_date}</TableCell>
+              <TableCell>
+                {new Date(m.release_date).toLocaleDateString()}
+              </TableCell>
               <TableCell>{m.mpaa_rating}</TableCell>
             </TableRow>
           ))}

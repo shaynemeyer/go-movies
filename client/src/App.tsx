@@ -32,7 +32,7 @@ function App() {
       credentials: 'include',
     };
 
-    fetch('/logout', requestOptions)
+    fetch(`${process.env.REACT_APP_BACKEND}/logout`, requestOptions)
       .catch((error) => console.log('error logging out', error))
       .finally(() => {
         setJwtToken('');
@@ -54,7 +54,7 @@ function App() {
             credentials: 'include',
           };
 
-          fetch(`/refresh`, requestOptions)
+          fetch(`${process.env.REACT_APP_BACKEND}/refresh`, requestOptions)
             .then((response) => response.json())
             .then((data) => {
               if (data.access_token) {
@@ -85,7 +85,10 @@ function App() {
         credentials: 'include',
       };
 
-      request<TokenResponse>(`/refresh`, requestOptions)
+      request<TokenResponse>(
+        `${process.env.REACT_APP_BACKEND}/refresh`,
+        requestOptions
+      )
         .then((token) => {
           if (token.access_token) {
             setJwtToken(token.access_token);

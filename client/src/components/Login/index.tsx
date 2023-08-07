@@ -42,7 +42,7 @@ const Login: FunctionComponent = () => {
       body: JSON.stringify(payload),
     };
 
-    fetch(`/authenticate`, requestOptions)
+    fetch(`${process.env.REACT_APP_BACKEND}/authenticate`, requestOptions)
       .then((response) => response.json())
       .then((data) => {
         if (data.error) {
